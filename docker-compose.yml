@@ -1,0 +1,18 @@
+name: nexterm
+services:
+  app:
+    image: germannewsmaker/nexterm:development
+    container_name: nexterm
+    hostname: nexterm
+    restart: always
+    ports:
+      - '172.17.0.1:59059:6989'
+    volumes:
+      - /var/lib/srv/$USER/docker/germannewsmaker/nexterm/development/rootfs/data/nexterm:/app/data
+    networks:
+      - nexterm
+
+networks:
+  nexterm:
+    name: nexterm
+    external: false
