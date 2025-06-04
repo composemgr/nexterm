@@ -1,0 +1,30 @@
+# nginx proxy address - http://172.17.0.1:59059
+
+name: nexterm
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  app:
+    image: germannewsmaker/nexterm:development
+    container_name: nexterm-app
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
+    restart: always
+    pull_policy: always
+    logging: *default-logging
+    environment:
+      - TZ=${TZ:-America/New_York}
+    ports:
+      - '172.17.0.1:59059:6989'
+    volumes:
+      - './rootfs/data/nexterm:/app/data'
+    networks:
+      - nexterm
+
+networks:
+  nexterm:
+    name: nexterm
+    external: false
