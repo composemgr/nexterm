@@ -45,7 +45,7 @@ See `docker-compose.yaml` for complete list of configurable options.
 
 ## 📂 Volumes
 
-- `./rootfs/data/nexterm` - Data storage
+- `./volumes/data/nexterm` - Data storage
 
 ## 🔍 Logging
 
