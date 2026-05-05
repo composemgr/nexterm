@@ -20,7 +20,7 @@ services:
     ports:
       - '172.17.0.1:59059:6989'
     volumes:
-      - './rootfs/data/nexterm:/app/data'
+      - './volumes/data/nexterm:/app/data'
     networks:
       - nexterm
 
