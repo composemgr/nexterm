@@ -19,6 +19,7 @@ services:
       TZ: ${TZ:-America/New_York}
       CONTAINER_NAME: nexterm-app
       HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-changeme_encryption_key_64_hex}
     ports:
       - '172.17.0.1:59059:6989'
     volumes:
