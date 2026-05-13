@@ -9,7 +9,7 @@ x-logging: &default-logging
 
 services:
   app:
-    image: germannewsmaker/nexterm:development
+    image: germannewsmaker/nexterm:latest
     container_name: nexterm-app
     hostname: ${BASE_HOST_NAME:-$HOSTNAME}
     restart: always
