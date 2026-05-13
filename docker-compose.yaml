@@ -17,14 +17,38 @@ services:
     logging: *default-logging
     environment:
       TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: nexterm-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
     ports:
       - '172.17.0.1:59059:6989'
     volumes:
       - './volumes/data/nexterm:/app/data'
     networks:
       - nexterm
+      - proxy
+      - cloudflare
+    labels:
+      - 'traefik.enable=true'
+      - 'cloudflare.enable=true'
+      - 'traefik.docker.network=proxy'
+      - 'cloudflare.service=http://nexterm-app:6989'
+      - 'cloudflare.hostname=nexterm.${CLOUDFLARE_ZONE_NAME:-}'
+      - 'traefik.http.routers.nexterm-app.entrypoints=http'
+      - 'traefik.http.routers.nexterm-app-secure.tls=true'
+      - 'traefik.http.routers.nexterm-app.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.middlewares.nexterm-app-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.nexterm-app.middlewares=nexterm-app-https-redirect'
+      - 'traefik.http.routers.nexterm-app-secure.entrypoints=https'
+      - 'traefik.http.routers.nexterm-app-secure.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.routers.nexterm-app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.nexterm-app-secure.service=nexterm-app'
+      - 'traefik.http.services.nexterm-app.loadbalancer.server.port=6989'
 
 networks:
   nexterm:
     name: nexterm
     external: false
+  proxy:
+    external: true
+  cloudflare:
+    external: true
