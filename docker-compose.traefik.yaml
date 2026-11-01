@@ -1,0 +1,46 @@
+name: nexterm
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  app:
+    image: germannewsmaker/nexterm:latest
+    container_name: nexterm-app
+    domainname: ${BASE_DOMAIN_NAME:-example.com}
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
+    restart: always
+    pull_policy: always
+    logging: *default-logging
+    environment:
+      TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: nexterm-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
+      # Encrypts stored server credentials
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-changeme_encryption_key_64_hex}
+    volumes:
+      - './volumes/data/nexterm:/app/data:z'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=traefik'
+      - 'traefik.http.routers.nexterm-app.entrypoints=http'
+      - 'traefik.http.routers.nexterm-app.rule=Host(`${BASE_HOST_NAME:-$HOSTNAME}`)'
+      - 'traefik.http.routers.nexterm-app.middlewares=nexterm-app-https-redirect'
+      - 'traefik.http.middlewares.nexterm-app-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.nexterm-app-secure.entrypoints=https'
+      - 'traefik.http.routers.nexterm-app-secure.rule=Host(`${BASE_HOST_NAME:-$HOSTNAME}`)'
+      - 'traefik.http.routers.nexterm-app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.nexterm-app-secure.service=nexterm-app'
+      - 'traefik.http.services.nexterm-app.loadbalancer.server.port=6989'
+    networks:
+      - nexterm
+      - traefik
+
+networks:
+  nexterm:
+    name: nexterm
+    external: false
+  traefik:
+    external: true

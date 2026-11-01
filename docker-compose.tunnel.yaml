@@ -1,0 +1,38 @@
+name: nexterm
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  app:
+    image: germannewsmaker/nexterm:latest
+    container_name: nexterm-app
+    domainname: ${BASE_DOMAIN_NAME:-example.com}
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
+    restart: always
+    pull_policy: always
+    logging: *default-logging
+    environment:
+      TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: nexterm-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
+      # Encrypts stored server credentials
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-changeme_encryption_key_64_hex}
+    volumes:
+      - './volumes/data/nexterm:/app/data:z'
+    labels:
+      - 'cloudflare.enable=true'
+      - 'cloudflare.service=http://nexterm-app:6989'
+      - 'cloudflare.hostname=${BASE_HOST_NAME:-$HOSTNAME}'
+    networks:
+      - nexterm
+      - cloudflare
+
+networks:
+  nexterm:
+    name: nexterm
+    external: false
+  cloudflare:
+    external: true
