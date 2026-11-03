@@ -22,6 +22,12 @@ services:
       HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
       # Encrypts stored server credentials
       ENCRYPTION_KEY: ${ENCRYPTION_KEY:-changeme_encryption_key_64_hex}
+    healthcheck:
+      test: ['CMD', 'nc', '-z', '127.0.0.1', '6989']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     ports:
       - '172.17.0.1:64270:6989'
     volumes:
