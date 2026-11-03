@@ -21,7 +21,7 @@ services:
       CONTAINER_NAME: nexterm-app
       HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
       # Encrypts stored server credentials
-      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-changeme_encryption_key_64_hex}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-0000000000000000000000000000000000000000000000000000000000000000}
     healthcheck:
       test: ['CMD', 'nc', '-z', '127.0.0.1', '6989']
       interval: 30s
